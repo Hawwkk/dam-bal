@@ -1,0 +1,119 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_FRAMES 10
+#define MAX_STRING 25
+
+void FIFO(char[], int, int);
+void LRU(char[], int, int);
+
+int main() {
+    int choice, numOfFrames, stringLength;
+    char inputString[MAX_STRING];
+
+    printf("\nEnter the number of empty frames: ");
+    scanf("%d", &numOfFrames);
+    printf("\nEnter the length of the string: ");
+    scanf("%d", &stringLength);
+    printf("\nEnter the string: ");
+    scanf("%s", inputString);
+
+    do {
+        printf("\n*********** MENU ***********\n1. FIFO\n2. LRU\n3. Exit\n");
+        printf("\nEnter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                FIFO(inputString, stringLength, numOfFrames);
+                break;
+            case 2:
+                LRU(inputString, stringLength, numOfFrames);
+                break;
+            case 3:
+                exit(0);
+            default:
+                printf("\nInvalid choice! Please try again.\n");
+        }
+
+    } while (1);
+
+    return 0;
+}
+
+void FIFO(char s[], int l, int f) {
+    int i, j = 0, cnt = 0;
+    char frames[MAX_FRAMES] = {0};
+
+    printf("\nPAGE\tFRAMES\tFAULTS");
+
+    for (i = 0; i < l; i++) {
+        int flag = 0;
+
+        for (int k = 0; k < f; k++) {
+            if (frames[k] == s[i]) {
+                flag = 1;
+                break;
+            }
+        }
+
+        printf("\n%c\t", s[i]);
+
+        if (flag == 0) {
+            frames[j] = s[i];
+            j = (j + 1) % f;
+
+            for (int k = 0; k < f; k++) {
+                printf("%c ", frames[k]);
+            }
+
+            printf("\tPage fault %d", cnt++);
+        } else {
+            for (int k = 0; k < f; k++) {
+                printf("%c ", frames[k]);
+            }
+
+            printf("\tNo page fault");
+        }
+    }
+}
+
+void LRU(char s[], int l, int f) {
+    int i, j, k, cnt = 0;
+    char frames[MAX_FRAMES] = {0};
+
+    printf("\nPAGE\tFRAMES\tFAULTS");
+
+    for (i = 0; i < l; i++) {
+        int flag = 0;
+
+        for (j = 0; j < f; j++) {
+            if (frames[j] == s[i]) {
+                flag = 1;
+                break;
+            }
+        }
+
+        printf("\n%c\t", s[i]);
+
+        if (flag == 0) {
+            for (j = 0; j < f - 1; j++) {
+                frames[j] = frames[j + 1];
+            }
+
+            frames[j] = s[i];
+
+            for (k = 0; k < f; k++) {
+                printf("%c ", frames[k]);
+            }
+
+            printf("\tPage fault %d", cnt++);
+        } else {
+            for (k = 0; k < f; k++) {
+                printf("%c ", frames[k]);
+            }
+
+            printf("\tNo page fault");
+        }
+    }
+}

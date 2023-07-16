@@ -1,0 +1,120 @@
+ #include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+char prod[3][10]={"A->aBa","B->bB","B->@"};
+char first[3][4]={"a","b","@"};
+char follow[3][4]={"$","a","a"};
+char stack[30],input[30],curp[30],table[3][5][20];
+int top=-1;
+void push(char c)
+{
+stack[++top]=c;
+}
+void pop()
+{
+top--;
+}
+void display()
+{
+int i;
+for(i=top;i>=0;i--)
+printf("%c",stack[i]);
+}
+int numr(char c)
+{
+switch(c)
+{
+case 'A':return 1;
+case 'B':return 2;
+case 'a':return 1;
+case 'b':return 2;
+case '$':return 3;
+}
+}
+void main()
+{
+int i,j,k;
+printf("enter string ending with $\n");
+scanf("%s",input);
+for(i=0;input[i]!='\0';i++)
+if(input[i]!='a' &&input[i]!='b' && input[i]!='$')
+{
+      printf("invalid string\n");exit(0);
+}
+printf("productions \n");
+for(i=0;i<3;i++)
+printf("%s\n",prod[i]);
+printf("\n first={%s,%s,%s}\n",first[0],first[1],first[2]);
+printf("\n follow={%s,%s,%s}\n",follow[0],follow[1],follow[2]);
+for(i=0;i<3;i++)
+for(j=0;j<4;j++)
+strcpy(table[i][j]," ");
+strcpy(table[1][0],"A");
+strcpy(table[2][0],"B");
+strcpy(table[0][1],"a");
+strcpy(table[0][2],"b");
+strcpy(table[0][3],"$");
+strcpy(table[1][1],"A->aBa");
+strcpy(table[2][1],"B->@");
+strcpy(table[2][2],"B->bB");
+printf("table\n");
+for(i=0;i<3;i++)
+{
+printf("-----------------------------------------------------------------------\n");
+for(j=0;j<4;j++)
+{
+printf("%s\t",table[i][j]);
+}
+printf("\n");
+}
+push('$');
+push('A');
+
+printf("stack\tinput\taction\n");
+i=0;
+while(input[i]!='$' && stack[top]!='$')
+{
+display();
+printf("\t%s",(input+i));
+if(stack[top]==input[i])
+{
+printf("\t matched %c\n",input[i]);
+pop();
+i++;
+}
+else 
+{
+ if(stack[top]>=65 && stack[top]<92)
+  {
+     strcpy(curp,table[numr(stack[top])][numr(input[i])]);
+     if(strcmp(curp," ")==0)
+     {
+           printf("invalid string\n");
+           exit(0);
+      }
+      else
+      {   printf("\t  apply production %s\n",curp);
+           if(curp[3]=='@')
+             pop();
+           else
+            {   pop();
+                 k=strlen(curp);
+                 for(j=k-1;j>=3;j--)
+                  push(curp[j]);
+              }
+        }
+     }
+       else
+           {
+                    printf("invalide string\n");exit(0);
+          }
+}
+}
+display();
+printf("\t%s\n",(input+i));
+if(input[i]=='$' && stack[top]=='$')
+printf("valid\n");
+else
+printf("invalid\n");
+}
+
